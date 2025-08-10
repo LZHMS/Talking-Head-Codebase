@@ -1,0 +1,86 @@
+ENV:
+  SEED: 131
+  NAME: train
+  DESCRIPTION: Train the model of stage 1 on the vocaset dataset.
+  OUTPUT_DIR: ./output
+  VERBOSE: True
+
+DATASET:
+  NAME: Vocaset
+  ROOT: ./data/
+  AUDIO_PATH: wav
+  VERTICES_PATH: vertices_npy
+  TEMPLATE_FILE: templates.pkl
+  READ_AUDIO: True
+  TRAIN_SUBJECTS: [
+      'FaceTalk_170728_03272_TA',
+      'FaceTalk_170904_00128_TA',
+      'FaceTalk_170725_00137_TA',
+      'FaceTalk_170915_00223_TA',
+      'FaceTalk_170811_03274_TA',
+      'FaceTalk_170913_03279_TA',
+      'FaceTalk_170904_03276_TA',
+      'FaceTalk_170912_03278_TA'
+  ]
+  VAL_SUBJECTS: ['FaceTalk_170811_03275_TA', 'FaceTalk_170908_03277_TA']
+  TEST_SUBJECTS: ['FaceTalk_170809_00138_TA', 'FaceTalk_170731_00024_TA']
+  
+LOSS:
+  QUANT_LOSS_WEIGHT: 1.0
+
+MODEL:
+  BACKBONE:
+    NAME: stage1_vocaset
+    IN_DIM: 15069
+    HIDDEN_SIZE: 1024
+    NUM_HIDDEN_LAYERS: 6
+    NUM_ATTENTION_HEADS: 8
+    INTERMEDIATE_SIZE: 1536
+    WINDOW_SIZE: 1
+    QUANT_FACTOR: 0
+    FACE_QUAN_NUM: 16
+    NEG: 0.2
+    INAFFINE: False
+  WAV2VEC2_PATH: facebook/wav2vec2-base-960h
+  HEAD:
+    N_EMBED: 256
+    ZQUANT_DIM: 64
+
+DATALOADER:
+  NUM_WORKERS: 0
+  TRAIN:
+    BATCH_SIZE: 1
+  TEST:
+    BATCH_SIZE: 1
+
+TRAINER:
+  NAME: CodeTalkerTrainer
+
+TRAIN:
+  USE_SGD: False
+  SYNC_BN: False  # adopt sync_bn or not
+  PRINT_FREQ: 5
+  SAVE_FREQ: 1
+  EVALUATE: True
+  EVAL_FREQ: 10
+
+OPTIM:
+  LR: 0.0001
+  STEP_LR: True
+  WARMUP_STEPS: 1
+  ADAPTIVE_LR: False
+  FACTOR: 0.3
+  PATIENCE: 3
+  THRESHOLD: 0.0001
+  POLY_LR: False
+  MAX_EPOCH: 200
+  STEP_SIZE: 20
+  GAMMA: 0.5
+  START_EPOCH: 0
+  POWER: 0.9
+  MOMENTUM: 0.9
+  WEIGHT_DECAY: 0.002
+
+TEST:
+  NO_TEST: False
+  EVALUATOR: CodeTalkerEvaluator
