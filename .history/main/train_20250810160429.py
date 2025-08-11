@@ -5,8 +5,7 @@ from config import CodeTalkerConfig
 from datasets import Vocaset, CodeTalkerDataManager
 from trainers import CodeTalkerTrainer
 from evaluation import CodeTalkerEvaluator
-import warnings
-warnings.filterwarnings('ignore')
+
 
 def merge_args(assistant, args):
     if args.gpu:

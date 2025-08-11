@@ -88,9 +88,9 @@ class CodeTalkerTrainer(TrainerBase):
     def after_train(self):
         self.assistant.logger.info("Finish training!")
 
-        do_test = not self.cfg.TEST.NO_TEST
+        do_test = not self.assistant.cfg.TEST.NO_TEST
         if do_test:
-            if self.cfg.TEST.FINAL_MODEL == "best_val":
+            if self.assistant.cfg.TEST.FINAL_MODEL == "best_val":
                 self.assistant.logger.info("Deploy the model with the best val performance")
                 self.load_model(self.output_dir)
             else:
