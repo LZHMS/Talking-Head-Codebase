@@ -8,22 +8,13 @@ ENV:
 DATASET:
   NAME: Vocaset
   ROOT: ./data/
-  AUDIO_PATH: wav
-  VERTICES_PATH: vertices_npy
-  TEMPLATE_FILE: templates.pkl
-  READ_AUDIO: True
-  TRAIN_SUBJECTS: [
-      'FaceTalk_170728_03272_TA',
-      'FaceTalk_170904_00128_TA',
-      'FaceTalk_170725_00137_TA',
-      'FaceTalk_170915_00223_TA',
-      'FaceTalk_170811_03274_TA',
-      'FaceTalk_170913_03279_TA',
-      'FaceTalk_170904_03276_TA',
-      'FaceTalk_170912_03278_TA'
-  ]
-  VAL_SUBJECTS: ['FaceTalk_170811_03275_TA', 'FaceTalk_170908_03277_TA']
-  TEST_SUBJECTS: ['FaceTalk_170809_00138_TA', 'FaceTalk_170731_00024_TA']
+  SPLIT: split.txt
+  VOCASET:
+    AUDIO: wav
+    VERTICES: vertices_npy
+    TEMPLATE: templates.pkl
+    WAV2VEC2: facebook/wav2vec2-base-960h
+    READ_AUDIO: True
   
 LOSS:
   QUANT_LOSS_WEIGHT: 1.0
@@ -41,7 +32,6 @@ MODEL:
     FACE_QUAN_NUM: 16
     NEG: 0.2
     INAFFINE: False
-  WAV2VEC2_PATH: facebook/wav2vec2-base-960h
   HEAD:
     N_EMBED: 256
     ZQUANT_DIM: 64

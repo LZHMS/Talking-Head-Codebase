@@ -9,26 +9,25 @@ from base import Datum, DatasetBase, DATASET_REGISTRY
 @DATASET_REGISTRY.register()
 class Vocaset(DatasetBase):
 
-    dataset_dir = "vocaset"
+    def __init__(self, cfg):
+        root = os.path.abspath(os.path.expanduser(cfg.ROOT))
+        self.dataset_dir = os.path.join(root, cfg.NAME)
+        self.split_path = os.path.join(self.dataset_dir, cfg.SPLIT)
+        self.audio_path = os.path.join(self.dataset_dir, cfg.VOCASET.AUDIO)
+        self.vertices_path = os.path.join(self.dataset_dir, cfg.VOCASET.VERTICES)
 
-    def __init__(self, assistant):
-        cfg = assistant.cfg
-        root = os.path.abspath(os.path.expanduser(cfg.DATASET.ROOT))
-        self.dataset_dir = os.path.join(root, self.dataset_dir)
-        self.audio_path = os.path.join(self.dataset_dir, cfg.DATASET.AUDIO_PATH)
-        self.vertices_path = os.path.join(self.dataset_dir, cfg.DATASET.VERTICES_PATH)
-
-        template_file = os.path.join(self.dataset_dir, cfg.DATASET.TEMPLATE_FILE)
+        template_file = os.path.join(self.dataset_dir, cfg.VOCASET.TEMPLATE)
         with open(template_file, 'rb') as fin:
             templates = pickle.load(fin, encoding='latin1')
 
-        if cfg.DATASET.READ_AUDIO: # read_audio==False when training vq to save time
-            processor = Wav2Vec2Processor.from_pretrained(cfg.MODEL.WAV2VEC2_PATH)
+        if cfg.VOCASET.READ_AUDIO: # read_audio==False when training vq to save time
+            processor = Wav2Vec2Processor.from_pretrained(cfg.VOCASET.WAV2VEC2)
 
-        subjects_dict = {}
-        subjects_dict["train"] = [i for i in cfg.DATASET.TRAIN_SUBJECTS]
-        subjects_dict["val"] = [i for i in cfg.DATASET.VAL_SUBJECTS]
-        subjects_dict["test"] = [i for i in cfg.DATASET.TEST_SUBJECTS]
+        subjects_dict = {"train": [], "val": [], "test": []}
+        with open(self.split_path) as f:
+            for line in f:
+                split, name = line.strip().split()
+                subjects_dict[split].append(name)
 
         train, val, test = [], [], []
         # Walk through the audio directory and process each WAV file
@@ -36,7 +35,7 @@ class Vocaset(DatasetBase):
             # Check if the file is a WAV file
             if file.endswith("wav"):
                 # If the configuration allows reading audio, load the audio file
-                if cfg.DATASET.READ_AUDIO:
+                if cfg.VOCASET.READ_AUDIO:
                     wav_path = os.path.join(self.audio_path, file)
                     speech_array, sampling_rate = librosa.load(wav_path, sr=16000)
                     audio = np.squeeze(processor(speech_array, sampling_rate=16000).input_values)
@@ -51,20 +50,16 @@ class Vocaset(DatasetBase):
                 vertices_path = os.path.join(self.vertices_path, key)
 
                 if os.path.exists(vertices_path):
-                    # If the vertex file exists, load the vertex data from the file
-                    if cfg.DATASET.NAME == "Vocaset":
-                        vertices = np.load(vertices_path, allow_pickle=True)[::2, :]  # due to the memory limit
-                    elif cfg.DATASET.NAME == "BIWI":
-                        vertices = np.load(vertices_path, allow_pickle=True)
+                    vertices = np.load(vertices_path, allow_pickle=True)[::2, :]  # due to the memory limit
 
                     # sum the dataset
                     data = Datum(file, audio, vertices, template)
                     sentence_id = int(key.split(".")[0][-2:])
-                    if subject_id in subjects_dict["train"] and sentence_id in cfg.DATASET.SPLIT.VOCASET.TRAIN:
+                    if subject_id in subjects_dict["train"] and sentence_id in cfg.VOCASET.TRAIN:
                         train.append(data)
-                    if subject_id in subjects_dict["val"] and sentence_id in cfg.DATASET.SPLIT.VOCASET.VAL:
+                    if subject_id in subjects_dict["val"] and sentence_id in cfg.VOCASET.VAL:
                         val.append(data)
-                    if subject_id in subjects_dict["test"] and sentence_id in cfg.DATASET.SPLIT.VOCASET.TEST:
+                    if subject_id in subjects_dict["test"] and sentence_id in cfg.VOCASET.TEST:
                         test.append(data)
 
         super().__init__(train=train, val=val, test=test)

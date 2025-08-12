@@ -1,7 +1,7 @@
-[2025-08-11 16:07:11 base_config.py line 213]=>INFO: Initializing main logger ...
-[2025-08-11 16:07:11 base_config.py line 217]=>INFO: Setting fixed seed: 131
-[2025-08-11 16:07:13 base_config.py line 258]=>INFO: Collecting system info ...
-[2025-08-11 16:07:13 base_config.py line 259]=>INFO: Project configuration:
+[2025-08-11 17:59:40 base_config.py line 230]=>INFO: Initializing main logger ...
+[2025-08-11 17:59:40 base_config.py line 234]=>INFO: Setting fixed seed: 131
+[2025-08-11 17:59:41 base_config.py line 276]=>INFO: Collecting system info ...
+[2025-08-11 17:59:41 base_config.py line 277]=>INFO: Project configuration:
 DATALOADER:
   NUM_WORKERS: 0
   TEST:
@@ -9,25 +9,25 @@ DATALOADER:
   TRAIN:
     BATCH_SIZE: 1
 DATASET:
-  AUDIO_PATH: wav
+  HDTF_TFHP:
+    COEF_STATS: stats_train.npz
+    LMDB: 
+    TEST: test.txt
+    TRAIN: train.txt
+    VAL: val.txt
   NAME: Vocaset
-  READ_AUDIO: True
   ROOT: ./data/
-  SPLIT:
-    BIWI:
-      TEST: [37, 38, 39, 40]
-      TRAIN: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32]
-      VAL: [33, 34, 35, 36]
-    VOCASET:
-      TEST: [21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40]
-      TRAIN: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40]
-      VAL: [21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40]
-  TEMPLATE_FILE: templates.pkl
-  TEST_SUBJECTS: ['FaceTalk_170809_00138_TA', 'FaceTalk_170731_00024_TA']
-  TRAIN_SUBJECTS: ['FaceTalk_170728_03272_TA', 'FaceTalk_170904_00128_TA', 'FaceTalk_170725_00137_TA', 'FaceTalk_170915_00223_TA', 'FaceTalk_170811_03274_TA', 'FaceTalk_170913_03279_TA', 'FaceTalk_170904_03276_TA', 'FaceTalk_170912_03278_TA']
+  SPLIT: split.txt
   VAL_PERCENT: 0.1
-  VAL_SUBJECTS: ['FaceTalk_170811_03275_TA', 'FaceTalk_170908_03277_TA']
-  VERTICES_PATH: vertices_npy
+  VOCASET:
+    AUDIO: wav
+    READ_AUDIO: True
+    TEMPLATE: templates.pkl
+    TEST: [21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40]
+    TRAIN: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40]
+    VAL: [21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40]
+    VERTICES: vertices_npy
+    WAV2VEC2: facebook/wav2vec2-base-960h
 ENV:
   DESCRIPTION: Train the model of stage 1 on the vocaset dataset.
   GPU: 0
@@ -71,7 +71,6 @@ MODEL:
     ZQUANT_DIM: 64
   INIT_WEIGHTS: 
   NAME: 
-  WAV2VEC2_PATH: facebook/wav2vec2-base-960h
 OPTIM:
   ADAM_BETA1: 0.9
   ADAM_BETA2: 0.999
@@ -118,8 +117,8 @@ TRAIN:
   USE_SGD: False
 TRAINER:
   NAME: CodeTalkerTrainer
-[2025-08-11 16:07:13 base_config.py line 260]=>INFO: Collecting env info ...
-[2025-08-11 16:07:31 base_config.py line 261]=>INFO: Env information:
+[2025-08-11 17:59:41 base_config.py line 278]=>INFO: Collecting env info ...
+[2025-08-11 17:59:53 base_config.py line 279]=>INFO: Env information:
 PyTorch version: 1.12.1
 Is debug build: False
 CUDA used to build PyTorch: 11.3
@@ -161,21 +160,18 @@ Versions of relevant libraries:
 [conda] pytorch3d                 0.7.2                    pypi_0    pypi
 [conda] torchaudio                0.12.1               py39_cu113    pytorch
 [conda] torchvision               0.13.1               py39_cu113    pytorch
-[2025-08-11 16:07:31 base_trainer.py line 21]=>INFO: Loading trainer: CodeTalkerTrainer
-[2025-08-11 16:07:31 base_dataset.py line 17]=>INFO: Loading dataset: Vocaset
-D:\anaconda3\envs\pytorch3d\lib\site-packages\huggingface_hub\file_download.py:143: UserWarning: `huggingface_hub` cache-system uses symlinks by default to efficiently store duplicated files but your machine does not support them in C:\Users\zhli\.cache\huggingface\hub\models--facebook--wav2vec2-base-960h. Caching files will still work but in a degraded version that might require more space on your disk. This warning can be disabled by setting the `HF_HUB_DISABLE_SYMLINKS_WARNING` environment variable. For more details, see https://huggingface.co/docs/huggingface_hub/how-to-cache#limitations.
-To support symlinks on Windows, you either need to activate Developer Mode or to run Python as an administrator. In order to activate developer mode, see this article: https://docs.microsoft.com/en-us/windows/apps/get-started/enable-your-device-for-development
-  warnings.warn(message)
-[2025-08-11 16:08:58 base_datamanager.py line 93]=>INFO: Dataset summary:
+[2025-08-11 17:59:53 base_trainer.py line 23]=>INFO: Loading trainer: CodeTalkerTrainer
+[2025-08-11 17:59:53 base_dataset.py line 17]=>INFO: Loading dataset: Vocaset
+[2025-08-11 18:00:53 base_datamanager.py line 94]=>INFO: Dataset summary:
 -------  -------
 Dataset  Vocaset
 # train  314
 # val    40
 # test   39
 -------  -------
-[2025-08-11 16:08:58 codetalker.py line 53]=>INFO: Building model  ...
-[2025-08-11 16:09:02 codetalker.py line 58]=>INFO: Params: 131,653,341
-[2025-08-11 16:09:02 codetalker.py line 59]=>INFO: Model Structure:
+[2025-08-11 18:00:53 codetalker.py line 53]=>INFO: Building model  ...
+[2025-08-11 18:00:56 codetalker.py line 58]=>INFO: Params: 131,653,341
+[2025-08-11 18:00:56 codetalker.py line 59]=>INFO: Model Structure:
 VQAutoEncoder(
   (encoder): TransformerEncoder(
     (vertice_mapping): Sequential(
@@ -464,42 +460,79 @@ VQAutoEncoder(
     (embedding): Embedding(256, 64)
   )
 )
-[2025-08-11 16:09:02 codetalker.py line 61]=>INFO: Building optimizer ...
-[2025-08-11 16:09:02 base_evaluator.py line 10]=>INFO: Loading evaluator: CodeTalkerEvaluator
-[2025-08-11 16:09:02 base_trainer.py line 180]=>INFO: Using VQ loss function for metrics ...
-[2025-08-11 16:09:02 base_trainer.py line 653]=>WARNING: No checkpoint found, train from scratch
-[2025-08-11 16:09:02 base_trainer.py line 100]=>INFO: Initialize tensorboard (log_dir=./output\tensorboard)
-[2025-08-11 16:09:14 codetalker.py line 151]=>INFO: epoch [1/200] batch [5/314] time 0.156 (2.381) data 0.010 (0.040) loss 0.2602 lr 1.0000e-04 eta 1 day, 17:32:19
-[2025-08-11 16:09:15 codetalker.py line 151]=>INFO: epoch [1/200] batch [10/314] time 0.153 (1.274) data 0.015 (0.030) loss 0.1952 lr 1.0000e-04 eta 22:12:56
-[2025-08-11 16:09:16 codetalker.py line 151]=>INFO: epoch [1/200] batch [15/314] time 0.162 (0.907) data 0.011 (0.026) loss 0.1693 lr 1.0000e-04 eta 15:49:18
-[2025-08-11 16:09:17 codetalker.py line 151]=>INFO: epoch [1/200] batch [20/314] time 0.142 (0.722) data 0.008 (0.024) loss 0.1518 lr 1.0000e-04 eta 12:35:22
-[2025-08-11 16:09:18 codetalker.py line 151]=>INFO: epoch [1/200] batch [25/314] time 0.152 (0.614) data 0.010 (0.023) loss 0.1404 lr 1.0000e-04 eta 10:42:09
-[2025-08-11 16:09:20 codetalker.py line 151]=>INFO: epoch [1/200] batch [30/314] time 0.188 (0.542) data 0.026 (0.024) loss 0.1272 lr 1.0000e-04 eta 9:26:35
-[2025-08-11 16:09:21 codetalker.py line 151]=>INFO: epoch [1/200] batch [35/314] time 0.141 (0.487) data 0.017 (0.024) loss 0.1226 lr 1.0000e-04 eta 8:29:50
-[2025-08-11 16:09:22 codetalker.py line 151]=>INFO: epoch [1/200] batch [40/314] time 0.181 (0.445) data 0.012 (0.023) loss 0.1122 lr 1.0000e-04 eta 7:45:47
-[2025-08-11 16:09:23 codetalker.py line 151]=>INFO: epoch [1/200] batch [45/314] time 0.150 (0.416) data 0.033 (0.023) loss 0.1073 lr 1.0000e-04 eta 7:15:05
-[2025-08-11 16:09:24 codetalker.py line 151]=>INFO: epoch [1/200] batch [50/314] time 0.206 (0.391) data 0.044 (0.024) loss 0.1019 lr 1.0000e-04 eta 6:48:24
-[2025-08-11 16:09:25 codetalker.py line 151]=>INFO: epoch [1/200] batch [55/314] time 0.200 (0.370) data 0.038 (0.023) loss 0.0986 lr 1.0000e-04 eta 6:27:20
-[2025-08-11 16:09:26 codetalker.py line 151]=>INFO: epoch [1/200] batch [60/314] time 0.128 (0.352) data 0.010 (0.022) loss 0.0952 lr 1.0000e-04 eta 6:07:45
-[2025-08-11 16:09:27 codetalker.py line 151]=>INFO: epoch [1/200] batch [65/314] time 0.145 (0.336) data 0.024 (0.022) loss 0.0913 lr 1.0000e-04 eta 5:50:58
-[2025-08-11 16:09:28 codetalker.py line 151]=>INFO: epoch [1/200] batch [70/314] time 0.162 (0.323) data 0.007 (0.022) loss 0.0881 lr 1.0000e-04 eta 5:37:33
-[2025-08-11 16:09:29 codetalker.py line 151]=>INFO: epoch [1/200] batch [75/314] time 0.137 (0.311) data 0.014 (0.021) loss 0.0856 lr 1.0000e-04 eta 5:25:36
-[2025-08-11 16:09:30 codetalker.py line 151]=>INFO: epoch [1/200] batch [80/314] time 0.116 (0.301) data 0.013 (0.021) loss 0.0821 lr 1.0000e-04 eta 5:14:38
-[2025-08-11 16:09:31 codetalker.py line 151]=>INFO: epoch [1/200] batch [85/314] time 0.170 (0.293) data 0.032 (0.021) loss 0.0808 lr 1.0000e-04 eta 5:05:55
-[2025-08-11 16:09:32 codetalker.py line 151]=>INFO: epoch [1/200] batch [90/314] time 0.179 (0.285) data 0.021 (0.021) loss 0.0780 lr 1.0000e-04 eta 4:57:28
-[2025-08-11 16:09:33 codetalker.py line 151]=>INFO: epoch [1/200] batch [95/314] time 0.160 (0.278) data 0.027 (0.021) loss 0.0749 lr 1.0000e-04 eta 4:50:24
-[2025-08-11 16:09:34 codetalker.py line 151]=>INFO: epoch [1/200] batch [100/314] time 0.154 (0.272) data 0.031 (0.021) loss 0.0725 lr 1.0000e-04 eta 4:44:11
-[2025-08-11 16:09:35 codetalker.py line 151]=>INFO: epoch [1/200] batch [105/314] time 0.135 (0.267) data 0.013 (0.020) loss 0.0706 lr 1.0000e-04 eta 4:39:02
-[2025-08-11 16:09:36 codetalker.py line 151]=>INFO: epoch [1/200] batch [110/314] time 0.143 (0.261) data 0.024 (0.020) loss 0.0680 lr 1.0000e-04 eta 4:33:12
-[2025-08-11 16:09:37 codetalker.py line 151]=>INFO: epoch [1/200] batch [115/314] time 0.161 (0.257) data 0.027 (0.020) loss 0.0658 lr 1.0000e-04 eta 4:28:38
-[2025-08-11 16:09:38 codetalker.py line 151]=>INFO: epoch [1/200] batch [120/314] time 0.141 (0.253) data 0.013 (0.020) loss 0.0645 lr 1.0000e-04 eta 4:24:10
-[2025-08-11 16:09:39 codetalker.py line 151]=>INFO: epoch [1/200] batch [125/314] time 0.131 (0.249) data 0.014 (0.020) loss 0.0623 lr 1.0000e-04 eta 4:19:57
-[2025-08-11 16:09:40 codetalker.py line 151]=>INFO: epoch [1/200] batch [130/314] time 0.165 (0.246) data 0.023 (0.020) loss 0.0599 lr 1.0000e-04 eta 4:16:43
-[2025-08-11 16:09:41 codetalker.py line 151]=>INFO: epoch [1/200] batch [135/314] time 0.130 (0.242) data 0.006 (0.020) loss 0.0588 lr 1.0000e-04 eta 4:13:12
-[2025-08-11 16:09:42 codetalker.py line 151]=>INFO: epoch [1/200] batch [140/314] time 0.124 (0.239) data 0.010 (0.019) loss 0.0572 lr 1.0000e-04 eta 4:09:09
-[2025-08-11 16:09:43 codetalker.py line 151]=>INFO: epoch [1/200] batch [145/314] time 0.167 (0.235) data 0.043 (0.020) loss 0.0556 lr 1.0000e-04 eta 4:05:38
-[2025-08-11 16:09:44 codetalker.py line 151]=>INFO: epoch [1/200] batch [150/314] time 0.156 (0.233) data 0.032 (0.020) loss 0.0536 lr 1.0000e-04 eta 4:03:06
-[2025-08-11 16:09:45 codetalker.py line 151]=>INFO: epoch [1/200] batch [155/314] time 0.257 (0.231) data 0.064 (0.020) loss 0.0522 lr 1.0000e-04 eta 4:00:44
-[2025-08-11 16:09:46 codetalker.py line 151]=>INFO: epoch [1/200] batch [160/314] time 0.134 (0.229) data 0.012 (0.020) loss 0.0505 lr 1.0000e-04 eta 3:59:06
-[2025-08-11 16:09:47 codetalker.py line 151]=>INFO: epoch [1/200] batch [165/314] time 0.140 (0.227) data 0.011 (0.020) loss 0.0494 lr 1.0000e-04 eta 3:56:35
-[2025-08-11 16:09:49 codetalker.py 
+[2025-08-11 18:00:56 codetalker.py line 61]=>INFO: Building optimizer ...
+[2025-08-11 18:00:56 base_evaluator.py line 12]=>INFO: Loading evaluator: CodeTalkerEvaluator
+[2025-08-11 18:00:56 base_trainer.py line 181]=>INFO: Using VQ loss function for metrics ...
+[2025-08-11 18:00:56 base_trainer.py line 654]=>WARNING: No checkpoint found, train from scratch
+[2025-08-11 18:00:56 base_trainer.py line 101]=>INFO: Initialize tensorboard (log_dir=./output\tensorboard)
+fatal   : Memory allocation failure
+fatal   : Memory allocation failure
+Traceback (most recent call last):
+  File "D:\anaconda3\envs\pytorch3d\lib\runpy.py", line 197, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "D:\anaconda3\envs\pytorch3d\lib\runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "F:\Workspace\Projects\TalkingHeadCodebase\main\train.py", line 42, in <module>
+    main(args)
+  File "F:\Workspace\Projects\TalkingHeadCodebase\main\train.py", line 28, in main
+    trainer.train()
+  File "F:\Workspace\Projects\TalkingHeadCodebase\trainers\codetalker.py", line 72, in train
+    super().train(self.start_epoch, self.max_epoch)
+  File "F:\Workspace\Projects\TalkingHeadCodebase\base\base_trainer.py", line 134, in train
+    self.run_epoch()
+  File "F:\Workspace\Projects\TalkingHeadCodebase\trainers\codetalker.py", line 121, in run_epoch
+    loss_details, info = self.forward_backward(batch)
+  File "F:\Workspace\Projects\TalkingHeadCodebase\trainers\codetalker.py", line 179, in forward_backward
+    self.model_backward_and_update(loss)
+  File "F:\Workspace\Projects\TalkingHeadCodebase\base\base_trainer.py", line 212, in model_backward_and_update
+    self.model_backward(loss)
+  File "F:\Workspace\Projects\TalkingHeadCodebase\base\base_trainer.py", line 195, in model_backward
+    loss.backward()
+  File "D:\anaconda3\envs\pytorch3d\lib\site-packages\torch\_tensor.py", line 396, in backward
+    torch.autograd.backward(self, gradient, retain_graph, create_graph, inputs=inputs)
+  File "D:\anaconda3\envs\pytorch3d\lib\site-packages\torch\autograd\__init__.py", line 173, in backward
+    Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+RuntimeError: cuDNN error: CUDNN_STATUS_INTERNAL_ERROR
+You can try to repro this exception using the following code snippet. If that doesn't trigger the error, please include your original repro script when reporting this issue.
+
+import torch
+torch.backends.cuda.matmul.allow_tf32 = False
+torch.backends.cudnn.benchmark = True
+torch.backends.cudnn.deterministic = False
+torch.backends.cudnn.allow_tf32 = True
+data = torch.randn([1, 1024, 1, 150], dtype=torch.float, device='cuda', requires_grad=True)
+net = torch.nn.Conv2d(1024, 1024, kernel_size=[1, 5], padding=[0, 0], stride=[1, 1], dilation=[1, 1], groups=1)
+net = net.cuda().float()
+out = net(data)
+out.backward(torch.randn_like(out))
+torch.cuda.synchronize()
+
+ConvolutionParams 
+    memory_format = Contiguous
+    data_type = CUDNN_DATA_FLOAT
+    padding = [0, 0, 0]
+    stride = [1, 1, 0]
+    dilation = [1, 1, 0]
+    groups = 1
+    deterministic = false
+    allow_tf32 = true
+input: TensorDescriptor 000002BC65031820
+    type = CUDNN_DATA_FLOAT
+    nbDims = 4
+    dimA = 1, 1024, 1, 150, 
+    strideA = 153600, 150, 150, 1, 
+output: TensorDescriptor 000002BC650310B0
+    type = CUDNN_DATA_FLOAT
+    nbDims = 4
+    dimA = 1, 1024, 1, 146, 
+    strideA = 149504, 146, 146, 1, 
+weight: FilterDescriptor 000002BBD6BA0F60
+    type = CUDNN_DATA_FLOAT
+    tensor_format = CUDNN_TENSOR_NCHW
+    nbDims = 4
+    dimA = 1024, 1024, 1, 5, 
+Pointer addresses: 
+    input: 0000000782124000
+    output: 0000000781E00000
+    weight: 000000078D800000
+

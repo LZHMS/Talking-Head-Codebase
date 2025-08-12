@@ -14,8 +14,8 @@ def build_dataset(assistant):
     avai_datasets = DATASET_REGISTRY.registered_names()
     check_availability(assistant.cfg.DATASET.NAME, avai_datasets)
     if assistant.cfg.ENV.VERBOSE:
-        assistant.logger.info("Loading dataset: {}".format(assistant.cfg.DATASET.NAME))
-    return DATASET_REGISTRY.get(assistant.cfg.DATASET.NAME)(assistant)
+        logger.info("Loading dataset: {}".format(assistant.cfg.DATASET.NAME))
+    return DATASET_REGISTRY.get(assistant.cfg.DATASET.NAME)(assistant.cfg.DATASET)
 
 class Datum:
     """Data instance which defines the basic attributes.
@@ -27,7 +27,7 @@ class Datum:
         classname (str): class name.
     """
 
-    def __init__(self, name="", audio=None, vertices=None, template=None, impath=None):
+    def __init__(self, name="", audio=None, vertices=None, template=None, coefficients=None, impath=None):
         # for fpath in [impath, audio_path, vertices_path, template_file]:
         #     assert isinstance(fpath, str)
         #     assert check_isfile(fpath)
@@ -37,6 +37,7 @@ class Datum:
         self._audio = audio
         self._vertices = vertices
         self._template = template
+        self._coefficients = coefficients
 
     @property
     def name(self):
@@ -57,6 +58,10 @@ class Datum:
     @property
     def template(self):
         return self._template
+    
+    @property
+    def coefficients(self):
+        return self._coefficients
     
     def to_dict(self, skip_none: bool = True):
         """

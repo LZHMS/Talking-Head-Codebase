@@ -1,2 +1,3 @@
 from .dm.codetalker_dm import CodeTalkerDataManager
-from .vocaset import Vocaset
+from .Vocaset import Vocaset
+from .HDTF_TFHP import HDTF_TFHP

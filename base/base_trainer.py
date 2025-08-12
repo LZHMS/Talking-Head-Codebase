@@ -11,6 +11,8 @@ from torch.utils.tensorboard import SummaryWriter
 from utils import (
   tolist_if_not, mkdir_if_missing, Registry, check_availability,
   RAdam, ConstantWarmupScheduler, LinearWarmupScheduler, calc_vq_loss, calc_logit_loss)
+import logging
+logger: logging.Logger
 
 TRAINER_REGISTRY = Registry("TRAINER")
 
@@ -18,7 +20,7 @@ def build_trainer(assistant):
     avai_trainers = TRAINER_REGISTRY.registered_names()
     check_availability(assistant.cfg.TRAINER.NAME, avai_trainers)
     if assistant.cfg.ENV.VERBOSE:
-        assistant.logger.info("Loading trainer: {}".format(assistant.cfg.TRAINER.NAME))
+        logger.info("Loading trainer: {}".format(assistant.cfg.TRAINER.NAME))
     return TRAINER_REGISTRY.get(assistant.cfg.TRAINER.NAME)(assistant)
 
 class TrainerBase:
@@ -32,7 +34,6 @@ class TrainerBase:
 
         self.check_cfg(assistant.cfg)
         self.device = assistant.device
-        self.logger = assistant.logger
 
     def check_cfg(self, cfg):
         """Check whether some variables are set correctly for
@@ -97,7 +98,7 @@ class TrainerBase:
     """
     def init_writer(self, log_dir):
         if self.__dict__.get("_writer") is None or self._writer is None:
-            self.logger.info(f"Initialize tensorboard (log_dir={log_dir})")
+            logger.info(f"Initialize tensorboard (log_dir={log_dir})")
             self._writer = SummaryWriter(log_dir=log_dir)
 
     def close_writer(self):
@@ -177,7 +178,7 @@ class TrainerBase:
     """
     def build_loss_metrics(self, loss_fc_name):
         if loss_fc_name == "VQLoss":
-            self.logger.info("Using VQ loss function for metrics ...")
+            logger.info("Using VQ loss function for metrics ...")
             return calc_vq_loss
 
     def forward_backward(self, batch):
@@ -243,7 +244,7 @@ class TrainerBase:
             )
 
         if param_groups is not None and staged_lr:
-            self.logger.warning(
+            logger.warning(
                 "staged_lr will be ignored, if you need to use staged_lr, "
                 "please bind it with param_groups yourself."
             )
@@ -261,7 +262,7 @@ class TrainerBase:
 
                 if isinstance(new_layers, str):
                     if new_layers is None:
-                        self.logger.warning("new_layers is empty (staged_lr is useless)")
+                        logger.warning("new_layers is empty (staged_lr is useless)")
                     new_layers = [new_layers]
 
                 base_params = []
@@ -495,7 +496,7 @@ class TrainerBase:
             model_name = "model.pth.tar-" + str(epoch)
         fpath = osp.join(save_dir, model_name)
         torch.save(state, fpath)
-        self.logger.info(f"Checkpoint saved to {fpath}")
+        logger.info(f"Checkpoint saved to {fpath}")
 
         # save current model name
         checkpoint_file = osp.join(save_dir, "checkpoint")
@@ -506,7 +507,7 @@ class TrainerBase:
         if is_best:
             best_fpath = osp.join(osp.dirname(fpath), "model-best.pth.tar")
             shutil.copy(fpath, best_fpath)
-            self.assistant.logger.info('Best checkpoint saved to "{}"'.format(best_fpath))
+            logger.info('Best checkpoint saved to "{}"'.format(best_fpath))
 
     """Load a checkpoint from a given directory.
         Functions:
@@ -516,7 +517,7 @@ class TrainerBase:
     """
     def load_model(self, directory, epoch=None):
         if not directory:
-            self.logger.warning(
+            logger.warning(
                 "Note that load_model() is skipped as no pretrained "
                 "model is given (ignore this if it's done on purpose)"
             )
@@ -540,7 +541,7 @@ class TrainerBase:
             state_dict = checkpoint["state_dict"]
             epoch = checkpoint["epoch"]
             val_result = checkpoint["val_result"]
-            self.logger.info(
+            logger.info(
                 f"Load {model_path} to {name} (epoch={epoch}, val_result={val_result:.1f})"
             )
             self._models[name].load_state_dict(state_dict)
@@ -580,7 +581,7 @@ class TrainerBase:
             )
 
         except Exception:
-            self.logger.error('Unable to load checkpoint from "{}"'.format(fpath))
+            logger.error('Unable to load checkpoint from "{}"'.format(fpath))
             raise
 
         return checkpoint
@@ -624,13 +625,13 @@ class TrainerBase:
         model.load_state_dict(model_dict)
 
         if len(matched_layers) == 0:
-            self.logger.warning(
+            logger.warning(
                 f"Cannot load {weight_path} (check the key names manually)"
             )
         else:
-            self.logger.info(f"Successfully loaded pretrained weights from {weight_path}")
+            logger.info(f"Successfully loaded pretrained weights from {weight_path}")
             if len(discarded_layers) > 0:
-                self.logger.info(
+                logger.info(
                     f"Layers discarded due to unmatched keys or size: {discarded_layers}"
                 )
 
@@ -650,10 +651,10 @@ class TrainerBase:
                 break
 
         if file_missing:
-            self.logger.warning("No checkpoint found, train from scratch")
+            logger.warning("No checkpoint found, train from scratch")
             return 0
 
-        self.logger.info(f"Found checkpoint at {directory} (will resume training)")
+        logger.info(f"Found checkpoint at {directory} (will resume training)")
 
         for name in names:
             path = osp.join(directory, name)
@@ -687,21 +688,21 @@ class TrainerBase:
             model_name = checkpoint.readlines()[0].strip("\n")
             fpath = osp.join(fdir, model_name)
 
-        self.assistant.logger.info('Loading checkpoint from "{}"'.format(fpath))
+        logger.info('Loading checkpoint from "{}"'.format(fpath))
         checkpoint = self.load_checkpoint(fpath)
         model.load_state_dict(checkpoint["state_dict"])
-        self.assistant.logger.info("Loaded model weights")
+        logger.info("Loaded model weights")
 
         if optimizer is not None and "optimizer" in checkpoint.keys():
             optimizer.load_state_dict(checkpoint["optimizer"])
-            self.assistant.logger.info("Loaded optimizer")
+            logger.info("Loaded optimizer")
 
         if scheduler is not None and "scheduler" in checkpoint.keys():
             scheduler.load_state_dict(checkpoint["scheduler"])
-            self.assistant.logger.info("Loaded scheduler")
+            logger.info("Loaded scheduler")
 
         start_epoch = checkpoint["epoch"]
-        self.assistant.logger.info("Previous epoch: {}".format(start_epoch))
+        logger.info("Previous epoch: {}".format(start_epoch))
 
         return start_epoch
     

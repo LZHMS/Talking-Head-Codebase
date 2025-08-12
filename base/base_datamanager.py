@@ -5,7 +5,8 @@ from transformers import Wav2Vec2Processor
 from tabulate import tabulate
 from .base_dataset import build_dataset
 from torch.utils.data import Dataset as TorchDataset
-
+import logging
+logger: logging.Logger
 
 def build_data_loader(
     cfg,
@@ -90,7 +91,7 @@ class DataManager:
             table.append(["# val", f"{len(self.dataset.val):,}"])
         table.append(["# test", f"{len(self.dataset.test):,}"])
 
-        assistant.logger.info(f"Dataset summary:\n{tabulate(table)}")
+        logger.info(f"Dataset summary:\n{tabulate(table)}")
 
 
 class DatasetWrapper(TorchDataset):

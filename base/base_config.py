@@ -2,6 +2,7 @@ import logging
 import random
 import numpy as np
 import torch
+import builtins
 from yacs.config import CfgNode as CN
 
 
@@ -51,9 +52,32 @@ class BaseConfig:
     # Directory where datasets are stored
     cfg.DATASET.NAME = ""
     cfg.DATASET.ROOT = ""
-    cfg.DATASET.AUDIO_PATH = ""
-    cfg.DATASET.VERTICES_PATH = ""
-    cfg.DATASET.TEMPLATE_FILE = ""
+    cfg.DATASET.SPLIT = ""    # split file of train, val, test
+
+    # for vocaset
+    cfg.DATASET.VOCASET = CN()
+    cfg.DATASET.VOCASET.AUDIO = ""
+    cfg.DATASET.VOCASET.VERTICES = ""
+    cfg.DATASET.VOCASET.TEMPLATE = ""
+    cfg.DATASET.VOCASET.TRAIN = list(range(1, 41))
+    cfg.DATASET.VOCASET.VAL = list(range(21, 41))
+    cfg.DATASET.VOCASET.TEST = list(range(21, 41))
+    cfg.DATASET.VOCASET.WAV2VEC2 = ""
+    cfg.DATASET.VOCASET.READ_AUDIO = True
+
+    # for HDTF_TFHP
+    cfg.DATASET.HDTF_TFHP = CN()
+    cfg.DATASET.HDTF_TFHP.LMDB = ""
+    cfg.DATASET.HDTF_TFHP.COEF_STATS = "stats_train.npz"
+    cfg.DATASET.HDTF_TFHP.TRAIN = "train.txt"
+    cfg.DATASET.HDTF_TFHP.VAL = "val.txt"
+    cfg.DATASET.HDTF_TFHP.TEST = "test.txt"
+    cfg.DATASET.HDTF_TFHP.COEF_FPS = 25      # frames per second for coefficients (sequence fps)
+    cfg.DATASET.HDTF_TFHP.MOTIONS = 100      # number of motions per sample
+    cfg.DATASET.HDTF_TFHP.CROP = "random"    # crop strategy
+    cfg.DATASET.HDTF_TFHP.ROT_REPR = "aa"    # rotation representation
+    cfg.DATASET.HDTF_TFHP.AUDIO_SR = 16000   # audio sampling rate
+
     # Percentage of validation data (only used for SSL datasets)
     # Set to 0 if do not want to use val data
     # Using val data for hyperparameter tuning was done in Oliver et al. 2018
@@ -107,7 +131,6 @@ class BaseConfig:
     # VQ-VAE config
     cfg.MODEL.HEAD.N_EMBED = 256
     cfg.MODEL.HEAD.ZQUANT_DIM = 64
-    cfg.MODEL.WAV2VEC2_PATH = ""
 
     ###########################
     # Optimization
@@ -210,11 +233,11 @@ class BaseConfig:
     # System Initialization
     ## logger configuration
     self.setup_logger()
-    self.logger.info("Initializing main logger ...")
+    logger.info("Initializing main logger ...")
 
     ## random seed setting
     if self.cfg.ENV.SEED >= 0:
-      self.logger.info('Setting fixed seed: {}'.format(self.cfg.ENV.SEED))
+      logger.info('Setting fixed seed: {}'.format(self.cfg.ENV.SEED))
       self.set_random_seed(self.cfg.ENV.SEED)
 
     ## cuda setting
@@ -223,19 +246,20 @@ class BaseConfig:
       self.device = torch.device(f"cuda:{self.cfg.ENV.GPU[0]}")
     else:
       self.device = torch.device("cpu")
-      self.logger.info('Setting device to {}'.format(self.device))
+      logger.info('Setting device to {}'.format(self.device))
   
   def setup_logger(self, logger_name="MainLogger"):
     logger = logging.getLogger(logger_name)
     logger.setLevel(logging.INFO)
-    handler = logging.StreamHandler()
-    datefmt = "%Y-%m-%d %H:%M:%S"
-    fmt = "[%(asctime)s %(filename)s line %(lineno)d]=>%(levelname)s: %(message)s"
-    formatter = logging.Formatter(fmt=fmt, datefmt=datefmt)
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
+    if not logger.handlers:
+      handler = logging.StreamHandler()
+      datefmt = "%Y-%m-%d %H:%M:%S"
+      fmt = "[%(asctime)s %(filename)s line %(lineno)d]=>%(levelname)s: %(message)s"
+      formatter = logging.Formatter(fmt=fmt, datefmt=datefmt)
+      handler.setFormatter(formatter)
+      logger.addHandler(handler)
 
-    self.logger = logger
+    builtins.logger = logger
 
   def set_random_seed(self, seed):
       random.seed(seed)
@@ -255,7 +279,7 @@ class BaseConfig:
   def print_info(self):
     """Print system info and env info.
     """
-    self.logger.info('Collecting system info ...')
-    self.logger.info(f"Project configuration:\n{self.cfg}")
-    self.logger.info('Collecting env info ...')
-    self.logger.info(f"Env information:\n{self.collect_env_info()}")
+    logger.info('Collecting system info ...')
+    logger.info(f"Project configuration:\n{self.cfg}")
+    logger.info('Collecting env info ...')
+    logger.info(f"Env information:\n{self.collect_env_info()}")

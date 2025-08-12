@@ -1,4 +1,6 @@
 from utils import Registry, check_availability
+import logging
+logger: logging.Logger
 
 EVALUATOR_REGISTRY = Registry("EVALUATOR")
 
@@ -7,7 +9,7 @@ def build_evaluator(assistant):
     avai_evaluators = EVALUATOR_REGISTRY.registered_names()
     check_availability(assistant.cfg.TEST.EVALUATOR, avai_evaluators)
     if assistant.cfg.ENV.VERBOSE:
-        assistant.logger.info("Loading evaluator: {}".format(assistant.cfg.TEST.EVALUATOR))
+        logger.info("Loading evaluator: {}".format(assistant.cfg.TEST.EVALUATOR))
     return EVALUATOR_REGISTRY.get(assistant.cfg.TEST.EVALUATOR)(assistant.cfg)  
 
 class EvaluatorBase:

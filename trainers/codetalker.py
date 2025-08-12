@@ -8,7 +8,8 @@ from base import TrainerBase, TRAINER_REGISTRY, build_evaluator
 from datasets import CodeTalkerDataManager
 from models import VQAutoEncoder
 from utils import mkdir_if_missing, MetricMeter, AverageMeter
-
+import logging
+logger: logging.Logger
 
 @TRAINER_REGISTRY.register()
 class CodeTalkerTrainer(TrainerBase):
@@ -50,22 +51,22 @@ class CodeTalkerTrainer(TrainerBase):
         Custom trainers can re-implement this method if necessary.
         """
 
-        self.assistant.logger.info(f"Building model {self.assistant.cfg.MODEL.NAME} ...")
+        logger.info(f"Building model {self.assistant.cfg.MODEL.NAME} ...")
         self.model = VQAutoEncoder(self.assistant.cfg.MODEL)
         if self.assistant.cfg.MODEL.INIT_WEIGHTS:
             self.load_pretrained_weights(self.model, self.assistant.cfg.MODEL.INIT_WEIGHTS)
         self.model.to(self.device)
-        self.assistant.logger.info(f"Params: {self.count_num_param(self.model):,}")
-        self.assistant.logger.info(f"Model Structure:\n{self.model}")
+        logger.info(f"Params: {self.count_num_param(self.model):,}")
+        logger.info(f"Model Structure:\n{self.model}")
 
-        self.assistant.logger.info(f"Building optimizer ...")
+        logger.info(f"Building optimizer ...")
         self.optim = self.build_optimizer(self.model)
         self.sched = self.build_lr_scheduler(self.optim)
         self.register_model("model", self.model, self.optim, self.sched)
 
         device_count = torch.cuda.device_count()
         if device_count > 1:
-            self.assistant.logger.info(f"Detected {device_count} GPUs (use nn.DataParallel)")
+            logger.info(f"Detected {device_count} GPUs (use nn.DataParallel)")
             self.model = nn.DataParallel(self.model)
 
     def train(self):
@@ -86,21 +87,21 @@ class CodeTalkerTrainer(TrainerBase):
         self.time_start = time.time()
 
     def after_train(self):
-        self.assistant.logger.info("Finish training!")
+        logger.info("Finish training!")
 
         do_test = not self.assistant.cfg.TEST.NO_TEST
         if do_test:
             if self.assistant.cfg.TEST.FINAL_MODEL == "best_val":
-                self.assistant.logger.info("Deploy the model with the best val performance")
+                logger.info("Deploy the model with the best val performance")
                 self.load_model(self.output_dir)
             else:
-                self.assistant.logger.info("Deploy the last-epoch model")
+                logger.info("Deploy the last-epoch model")
             self.test()
 
         # Show elapsed time
         elapsed = round(time.time() - self.time_start)
         elapsed = str(datetime.timedelta(seconds=elapsed))
-        self.assistant.logger.info(f"Elapsed: {elapsed}")
+        logger.info(f"Elapsed: {elapsed}")
 
         # Close writer
         self.close_writer()
@@ -148,7 +149,7 @@ class CodeTalkerTrainer(TrainerBase):
                 info += [f"loss {rec_loss_meter.val:.4f}"]
                 info += [f"lr {self.get_current_lr():.4e}"]
                 info += [f"eta {eta}"]
-                self.logger.info(" ".join(info))
+                logger.info(" ".join(info))
 
             n_iter = self.epoch * self.num_batches + self.batch_idx
             for name, meter in zip(["rec_loss", "quant_loss"],
@@ -158,7 +159,7 @@ class CodeTalkerTrainer(TrainerBase):
 
             end = time.time()
         
-        self.assistant.logger.info('epoch: {} '
+        logger.info('epoch: {} '
                         'loss_train: {} '
                         'pp_train: {} '
                         .format(self.epoch + 1, rec_loss_meter.avg, pp_meter.avg)
@@ -213,7 +214,7 @@ class CodeTalkerTrainer(TrainerBase):
             split = "test"  # in case val_loader is None
             data_loader = self.test_loader
 
-        self.assistant.logger.info(f"Evaluate on the *{split}* set")
+        logger.info(f"Evaluate on the *{split}* set")
 
         rec_loss_meter = AverageMeter()
         quant_loss_meter = AverageMeter()
@@ -231,7 +232,7 @@ class CodeTalkerTrainer(TrainerBase):
                 m.update(x.item(), 1)
         
         rec_loss_val, quant_loss_val, pp_val = rec_loss_meter.avg, quant_loss_meter.avg, pp_meter.avg
-        self.assistant.logger.info('epoch: {} '
+        logger.info('epoch: {} '
                             'loss_val: {} '
                             'pp_val: {} '
                             .format(self.epoch + 1, rec_loss_val, pp_val)
