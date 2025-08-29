@@ -2,20 +2,20 @@ import os
 import os.path as osp
 import tarfile
 import zipfile
-from collections import defaultdict
 import gdown
 
 from utils import check_isfile, Registry, check_availability
-
+import logging
+logger: logging.Logger
 
 DATASET_REGISTRY = Registry("DATASET")
 
-def build_dataset(assistant):
+def build_dataset(cfg):
     avai_datasets = DATASET_REGISTRY.registered_names()
-    check_availability(assistant.cfg.DATASET.NAME, avai_datasets)
-    if assistant.cfg.ENV.VERBOSE:
-        logger.info("Loading dataset: {}".format(assistant.cfg.DATASET.NAME))
-    return DATASET_REGISTRY.get(assistant.cfg.DATASET.NAME)(assistant.cfg.DATASET)
+    check_availability(cfg.DATASET.NAME, avai_datasets)
+    if cfg.ENV.VERBOSE:
+        logger.info("Loading dataset: {}".format(cfg.DATASET.NAME))
+    return DATASET_REGISTRY.get(cfg.DATASET.NAME)(cfg.DATASET)
 
 class Datum:
     """Data instance which defines the basic attributes.

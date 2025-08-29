@@ -5,6 +5,8 @@ import torch
 import builtins
 from yacs.config import CfgNode as CN
 
+import logging
+logger: logging.Logger
 
 class BaseConfig:
   def __init__(self, new_allowed=True):

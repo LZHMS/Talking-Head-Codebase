@@ -1,10 +1,8 @@
 import torch
-import librosa
-import numpy as np
-from transformers import Wav2Vec2Processor
 from tabulate import tabulate
 from .base_dataset import build_dataset
 from torch.utils.data import Dataset as TorchDataset
+
 import logging
 logger: logging.Logger
 
@@ -36,12 +34,11 @@ class DataManager:
 
     def __init__(
         self,
-        assistant,
+        cfg,
         dataset_wrapper=None
     ):
         # Load dataset
-        dataset = build_dataset(assistant)
-        cfg = assistant.cfg
+        dataset = build_dataset(cfg)
 
         # Build train_loader
         train_loader = build_data_loader(
@@ -79,10 +76,10 @@ class DataManager:
         self.val_loader = val_loader
         self.test_loader = test_loader
 
-        self.show_dataset_summary(assistant)
+        self.show_dataset_summary(cfg)
 
-    def show_dataset_summary(self, assistant):
-        dataset_name = assistant.cfg.DATASET.NAME
+    def show_dataset_summary(self, cfg):
+        dataset_name = cfg.DATASET.NAME
 
         table = []
         table.append(["Dataset", dataset_name])

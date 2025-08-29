@@ -3,8 +3,7 @@ import pickle
 import numpy as np
 import librosa
 from transformers import Wav2Vec2Processor
-from base import Datum, DatasetBase, DATASET_REGISTRY
-
+from base import Datum, DatasetBase, DATASET_REGISTRY, DataManager
 
 @DATASET_REGISTRY.register()
 class Vocaset(DatasetBase):
@@ -63,3 +62,11 @@ class Vocaset(DatasetBase):
                         test.append(data)
 
         super().__init__(train=train, val=val, test=test)
+
+
+class CodeTalkerDataManager(DataManager):
+  
+    def __init__(self,
+                assistant,
+                dataset_wrapper=None):
+        super().__init__(assistant, dataset_wrapper)

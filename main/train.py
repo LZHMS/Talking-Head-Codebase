@@ -3,7 +3,7 @@ import argparse
 from base import build_trainer
 from config import CodeTalkerConfig
 from datasets import Vocaset, CodeTalkerDataManager
-from trainers import CodeTalkerTrainer
+from trainers import CodeTalkerTrainer, CodeStyle
 from evaluation import CodeTalkerEvaluator
 import warnings
 warnings.filterwarnings('ignore')

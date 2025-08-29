@@ -6,13 +6,13 @@ import numpy as np
 import os.path as osp
 from base import TrainerBase, TRAINER_REGISTRY, build_evaluator
 from datasets import CodeTalkerDataManager, DiffPoseTalkDM
-from models import VQAutoEncoder
+from models import VQAutoEncoder, StyleVQAE
 from utils import mkdir_if_missing, MetricMeter, AverageMeter
 import logging
 logger: logging.Logger
 
 @TRAINER_REGISTRY.register()
-class CodeTalkerTrainer(TrainerBase):
+class CodeStyle(TrainerBase):
     def __init__(self, assistant):
         super().__init__(assistant)
 
@@ -52,7 +52,7 @@ class CodeTalkerTrainer(TrainerBase):
         """
 
         logger.info(f"Building model {self.assistant.cfg.MODEL.NAME} ...")
-        self.model = VQAutoEncoder(self.assistant.cfg.MODEL)
+        self.model = StyleVQAE(self.assistant.cfg.MODEL)
         if self.assistant.cfg.MODEL.INIT_WEIGHTS:
             self.load_pretrained_weights(self.model, self.assistant.cfg.MODEL.INIT_WEIGHTS)
         self.model.to(self.device)
@@ -169,11 +169,11 @@ class CodeTalkerTrainer(TrainerBase):
             self.write_scalar(s, m, self.epoch + 1)
 
     def forward_backward(self, batch):
-        name, vertices, template, _ = self.parse_batch(batch)
+        name, audio, coefficients = self.parse_batch(batch)
         
-        output, quant_loss, info = self.model(vertices, template)
+        output, quant_loss, info = self.model(coefficients)
         loss, loss_details = self.criterion(output, 
-                                     vertices, 
+                                     coefficients, 
                                      quant_loss, 
                                      quant_loss_weight=self.assistant.cfg.LOSS.QUANT_LOSS_WEIGHT)
         
@@ -245,14 +245,15 @@ class CodeTalkerTrainer(TrainerBase):
 
     def parse_batch(self, batch):
         name = batch["name"]
-        vertices = batch["vertices"].to(self.device, non_blocking=True)
-        template = batch["template"].to(self.device, non_blocking=True)
-
+        coefficients = []
+        for k in ['shape', 'exp', 'pose']:
+            coefficients.append(batch["coefficients"][k].to(self.device).float())
+        
         if "audio" in batch:
             audio = batch["audio"].to(self.device)
-            return name, vertices.float(), template.float(), audio.float()
+            return name, audio.float(), coefficients
         
-        return name, vertices.float(), template.float(), None
+        return name, None, coefficients
 
     def get_current_lr(self, names=None):
         names = self.get_model_names(names)

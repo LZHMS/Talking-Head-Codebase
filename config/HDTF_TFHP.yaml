@@ -44,7 +44,7 @@ DATALOADER:
     BATCH_SIZE: 1
 
 TRAINER:
-  NAME: CodeTalkerTrainer
+  NAME: CodeStyle
 
 TRAIN:
   USE_SGD: False

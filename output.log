@@ -1,7 +1,7 @@
-[2025-08-11 17:59:40 base_config.py line 230]=>INFO: Initializing main logger ...
-[2025-08-11 17:59:40 base_config.py line 234]=>INFO: Setting fixed seed: 131
-[2025-08-11 17:59:41 base_config.py line 276]=>INFO: Collecting system info ...
-[2025-08-11 17:59:41 base_config.py line 277]=>INFO: Project configuration:
+[2025-08-29 17:01:04 base_config.py line 238]=>INFO: Initializing main logger ...
+[2025-08-29 17:01:04 base_config.py line 242]=>INFO: Setting fixed seed: 131
+[2025-08-29 17:01:04 base_config.py line 284]=>INFO: Collecting system info ...
+[2025-08-29 17:01:04 base_config.py line 285]=>INFO: Project configuration:
 DATALOADER:
   NUM_WORKERS: 0
   TEST:
@@ -10,12 +10,17 @@ DATALOADER:
     BATCH_SIZE: 1
 DATASET:
   HDTF_TFHP:
+    AUDIO_SR: 16000
+    COEF_FPS: 25
     COEF_STATS: stats_train.npz
+    CROP: random
     LMDB: 
+    MOTIONS: 100
+    ROT_REPR: aa
     TEST: test.txt
     TRAIN: train.txt
     VAL: val.txt
-  NAME: Vocaset
+  NAME: HDTF_TFHP
   ROOT: ./data/
   SPLIT: split.txt
   VAL_PERCENT: 0.1
@@ -116,63 +121,65 @@ TRAIN:
   SYNC_BN: False
   USE_SGD: False
 TRAINER:
-  NAME: CodeTalkerTrainer
-[2025-08-11 17:59:41 base_config.py line 278]=>INFO: Collecting env info ...
-[2025-08-11 17:59:53 base_config.py line 279]=>INFO: Env information:
+  NAME: CodeStyle
+[2025-08-29 17:01:04 base_config.py line 286]=>INFO: Collecting env info ...
+[2025-08-29 17:01:10 base_config.py line 287]=>INFO: Env information:
 PyTorch version: 1.12.1
 Is debug build: False
 CUDA used to build PyTorch: 11.3
 ROCM used to build PyTorch: N/A
 
-OS: Microsoft Windows 11 家庭中文版
-GCC version: (x86_64-posix-sjlj-rev0, Built by MinGW-W64 project) 8.1.0
+OS: Microsoft Windows 11 专业版
+GCC version: Could not collect
 Clang version: Could not collect
-CMake version: version 3.30.1
+CMake version: Could not collect
 Libc version: N/A
 
 Python version: 3.9.21 (main, Dec 11 2024, 16:35:24) [MSC v.1929 64 bit (AMD64)] (64-bit runtime)
 Python platform: Windows-10-10.0.26100-SP0
 Is CUDA available: True
-CUDA runtime version: 11.3.58
-GPU models and configuration: GPU 0: NVIDIA GeForce RTX 3050 Laptop GPU
-Nvidia driver version: 577.00
+CUDA runtime version: 12.4.131
+GPU models and configuration: GPU 0: NVIDIA GeForce RTX 4090 D
+Nvidia driver version: 560.94
 cuDNN version: Could not collect
 HIP runtime version: N/A
 MIOpen runtime version: N/A
 Is XNNPACK available: True
 
 Versions of relevant libraries:
+[pip3] facenet-pytorch==2.3.0
 [pip3] mypy-extensions==1.0.0
-[pip3] numpy==1.22.3
+[pip3] numpy==1.23.0
 [pip3] pytorch3d==0.7.2
 [pip3] torch==1.12.1
 [pip3] torchaudio==0.12.1
 [pip3] torchvision==0.13.1
-[conda] blas                      1.0                         mkl    https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free
-[conda] cudatoolkit               11.3.1               h59b6b97_2    https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main
-[conda] mkl                       2023.1.0         h6b88ed4_46358    https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main
-[conda] mkl-service               2.4.0            py39h827c3e9_2    https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main
-[conda] mkl_fft                   1.3.11           py39h827c3e9_0    https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main
-[conda] mkl_random                1.2.8            py39hc64d2fc_0    https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main
-[conda] numpy                     1.22.3                   pypi_0    pypi
-[conda] pytorch                   1.12.1          py3.9_cuda11.3_cudnn8_0    pytorch
-[conda] pytorch-mutex             1.0                        cuda    pytorch
-[conda] pytorch3d                 0.7.2                    pypi_0    pypi
-[conda] torchaudio                0.12.1               py39_cu113    pytorch
-[conda] torchvision               0.13.1               py39_cu113    pytorch
-[2025-08-11 17:59:53 base_trainer.py line 23]=>INFO: Loading trainer: CodeTalkerTrainer
-[2025-08-11 17:59:53 base_dataset.py line 17]=>INFO: Loading dataset: Vocaset
-[2025-08-11 18:00:53 base_datamanager.py line 94]=>INFO: Dataset summary:
--------  -------
-Dataset  Vocaset
-# train  314
-# val    40
-# test   39
--------  -------
-[2025-08-11 18:00:53 codetalker.py line 53]=>INFO: Building model  ...
-[2025-08-11 18:00:56 codetalker.py line 58]=>INFO: Params: 131,653,341
-[2025-08-11 18:00:56 codetalker.py line 59]=>INFO: Model Structure:
-VQAutoEncoder(
+[conda] blas                            1.0                    mkl                      https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free
+[conda] cudatoolkit                     11.3.1                 h59b6b97_2               https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main
+[conda] mkl                             2023.1.0               h6b88ed4_46358           https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main
+[conda] mkl-service                     2.4.0                  py39h827c3e9_2           https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main
+[conda] mkl_fft                         1.3.11                 py39h827c3e9_0           https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main
+[conda] mkl_random                      1.2.8                  py39hc64d2fc_0           https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main
+[conda] numpy                           1.23.0                 pypi_0                   pypi
+[conda] numpy-base                      1.26.4                 py39h65a83cf_0           https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main
+[conda] pytorch                         1.12.1                 py3.9_cuda11.3_cudnn8_0  pytorch
+[conda] pytorch-mutex                   1.0                    cuda                     pytorch
+[conda] pytorch3d                       0.7.2                  pypi_0                   pypi
+[conda] torchaudio                      0.12.1                 py39_cu113               pytorch
+[conda] torchvision                     0.13.1                 py39_cu113               pytorch
+[2025-08-29 17:01:10 base_trainer.py line 23]=>INFO: Loading trainer: CodeStyle
+[2025-08-29 17:01:10 base_dataset.py line 17]=>INFO: Loading dataset: HDTF_TFHP
+[2025-08-29 17:01:13 base_datamanager.py line 91]=>INFO: Dataset summary:
+-------  ---------
+Dataset  HDTF_TFHP
+# train  875
+# val    118
+# test   120
+-------  ---------
+[2025-08-29 17:01:13 codestyle.py line 54]=>INFO: Building model  ...
+[2025-08-29 17:01:14 codestyle.py line 59]=>INFO: Params: 131,653,341
+[2025-08-29 17:01:14 codestyle.py line 60]=>INFO: Model Structure:
+StyleVQAE(
   (encoder): TransformerEncoder(
     (vertice_mapping): Sequential(
       (0): Linear(in_features=15069, out_features=1024, bias=True)
@@ -460,79 +467,44 @@ VQAutoEncoder(
     (embedding): Embedding(256, 64)
   )
 )
-[2025-08-11 18:00:56 codetalker.py line 61]=>INFO: Building optimizer ...
-[2025-08-11 18:00:56 base_evaluator.py line 12]=>INFO: Loading evaluator: CodeTalkerEvaluator
-[2025-08-11 18:00:56 base_trainer.py line 181]=>INFO: Using VQ loss function for metrics ...
-[2025-08-11 18:00:56 base_trainer.py line 654]=>WARNING: No checkpoint found, train from scratch
-[2025-08-11 18:00:56 base_trainer.py line 101]=>INFO: Initialize tensorboard (log_dir=./output\tensorboard)
-fatal   : Memory allocation failure
-fatal   : Memory allocation failure
+[2025-08-29 17:01:14 codestyle.py line 62]=>INFO: Building optimizer ...
+[2025-08-29 17:01:14 base_evaluator.py line 12]=>INFO: Loading evaluator: CodeTalkerEvaluator
+[2025-08-29 17:01:14 base_trainer.py line 181]=>INFO: Using VQ loss function for metrics ...
+[2025-08-29 17:01:14 base_trainer.py line 654]=>WARNING: No checkpoint found, train from scratch
+[2025-08-29 17:01:14 base_trainer.py line 101]=>INFO: Initialize tensorboard (log_dir=./output\tensorboard)
 Traceback (most recent call last):
-  File "D:\anaconda3\envs\pytorch3d\lib\runpy.py", line 197, in _run_module_as_main
+  File "D:\Software\Miniconda3\envs\pytorch3d\lib\runpy.py", line 197, in _run_module_as_main
     return _run_code(code, main_globals, None,
-  File "D:\anaconda3\envs\pytorch3d\lib\runpy.py", line 87, in _run_code
+  File "D:\Software\Miniconda3\envs\pytorch3d\lib\runpy.py", line 87, in _run_code
     exec(code, run_globals)
-  File "F:\Workspace\Projects\TalkingHeadCodebase\main\train.py", line 42, in <module>
+  File "D:\Projects\TalkingHeadCodebase\main\train.py", line 42, in <module>
     main(args)
-  File "F:\Workspace\Projects\TalkingHeadCodebase\main\train.py", line 28, in main
+  File "D:\Projects\TalkingHeadCodebase\main\train.py", line 28, in main
     trainer.train()
-  File "F:\Workspace\Projects\TalkingHeadCodebase\trainers\codetalker.py", line 72, in train
+  File "D:\Projects\TalkingHeadCodebase\trainers\codestyle.py", line 73, in train
     super().train(self.start_epoch, self.max_epoch)
-  File "F:\Workspace\Projects\TalkingHeadCodebase\base\base_trainer.py", line 134, in train
+  File "D:\Projects\TalkingHeadCodebase\base\base_trainer.py", line 134, in train
     self.run_epoch()
-  File "F:\Workspace\Projects\TalkingHeadCodebase\trainers\codetalker.py", line 121, in run_epoch
+  File "D:\Projects\TalkingHeadCodebase\trainers\codestyle.py", line 122, in run_epoch
     loss_details, info = self.forward_backward(batch)
-  File "F:\Workspace\Projects\TalkingHeadCodebase\trainers\codetalker.py", line 179, in forward_backward
-    self.model_backward_and_update(loss)
-  File "F:\Workspace\Projects\TalkingHeadCodebase\base\base_trainer.py", line 212, in model_backward_and_update
-    self.model_backward(loss)
-  File "F:\Workspace\Projects\TalkingHeadCodebase\base\base_trainer.py", line 195, in model_backward
-    loss.backward()
-  File "D:\anaconda3\envs\pytorch3d\lib\site-packages\torch\_tensor.py", line 396, in backward
-    torch.autograd.backward(self, gradient, retain_graph, create_graph, inputs=inputs)
-  File "D:\anaconda3\envs\pytorch3d\lib\site-packages\torch\autograd\__init__.py", line 173, in backward
-    Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
-RuntimeError: cuDNN error: CUDNN_STATUS_INTERNAL_ERROR
-You can try to repro this exception using the following code snippet. If that doesn't trigger the error, please include your original repro script when reporting this issue.
-
-import torch
-torch.backends.cuda.matmul.allow_tf32 = False
-torch.backends.cudnn.benchmark = True
-torch.backends.cudnn.deterministic = False
-torch.backends.cudnn.allow_tf32 = True
-data = torch.randn([1, 1024, 1, 150], dtype=torch.float, device='cuda', requires_grad=True)
-net = torch.nn.Conv2d(1024, 1024, kernel_size=[1, 5], padding=[0, 0], stride=[1, 1], dilation=[1, 1], groups=1)
-net = net.cuda().float()
-out = net(data)
-out.backward(torch.randn_like(out))
-torch.cuda.synchronize()
-
-ConvolutionParams 
-    memory_format = Contiguous
-    data_type = CUDNN_DATA_FLOAT
-    padding = [0, 0, 0]
-    stride = [1, 1, 0]
-    dilation = [1, 1, 0]
-    groups = 1
-    deterministic = false
-    allow_tf32 = true
-input: TensorDescriptor 000002BC65031820
-    type = CUDNN_DATA_FLOAT
-    nbDims = 4
-    dimA = 1, 1024, 1, 150, 
-    strideA = 153600, 150, 150, 1, 
-output: TensorDescriptor 000002BC650310B0
-    type = CUDNN_DATA_FLOAT
-    nbDims = 4
-    dimA = 1, 1024, 1, 146, 
-    strideA = 149504, 146, 146, 1, 
-weight: FilterDescriptor 000002BBD6BA0F60
-    type = CUDNN_DATA_FLOAT
-    tensor_format = CUDNN_TENSOR_NCHW
-    nbDims = 4
-    dimA = 1024, 1024, 1, 5, 
-Pointer addresses: 
-    input: 0000000782124000
-    output: 0000000781E00000
-    weight: 000000078D800000
-
+  File "D:\Projects\TalkingHeadCodebase\trainers\codestyle.py", line 174, in forward_backward
+    output, quant_loss, info = self.model(coefficients)
+  File "D:\Software\Miniconda3\envs\pytorch3d\lib\site-packages\torch\nn\modules\module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "D:\Projects\TalkingHeadCodebase\models\StyleVQAE.py", line 20, in forward
+    quant, emb_loss, info = self.encode(x)
+  File "D:\Projects\TalkingHeadCodebase\models\StyleVQAE.py", line 10, in encode
+    h = self.encoder(x) ## x --> z'
+  File "D:\Software\Miniconda3\envs\pytorch3d\lib\site-packages\torch\nn\modules\module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "D:\Projects\TalkingHeadCodebase\models\vqae.py", line 178, in forward
+    inputs = self.vertice_mapping(inputs)
+  File "D:\Software\Miniconda3\envs\pytorch3d\lib\site-packages\torch\nn\modules\module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "D:\Software\Miniconda3\envs\pytorch3d\lib\site-packages\torch\nn\modules\container.py", line 139, in forward
+    input = module(input)
+  File "D:\Software\Miniconda3\envs\pytorch3d\lib\site-packages\torch\nn\modules\module.py", line 1130, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "D:\Software\Miniconda3\envs\pytorch3d\lib\site-packages\torch\nn\modules\linear.py", line 114, in forward
+    return F.linear(input, self.weight, self.bias)
+RuntimeError: mat1 and mat2 shapes cannot be multiplied (200x156 and 15069x1024)

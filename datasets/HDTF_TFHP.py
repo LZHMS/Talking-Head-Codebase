@@ -5,7 +5,7 @@ import io
 import torchaudio
 import torch
 import numpy as np
-from base import Datum, DatasetBase, DATASET_REGISTRY
+from base import Datum, DatasetBase, DATASET_REGISTRY, DataManager
 import logging
 logger: logging.Logger
 
@@ -38,7 +38,7 @@ class HDTF_TFHP(DatasetBase):
         self.audio_total_len = round(self.audio_unit * self.coef_total_len)
 
         # Load lmdb env and get the clip len
-        lmdb_env = lmdb.open(str(self.lmdb_dir), readonly=True, lock=False, readahead=False, meminit=False)
+        lmdb_env = lmdb.open(str(lmdb_path), readonly=True, lock=False, readahead=False, meminit=False)
         with lmdb_env.begin(write=False) as txn:
             self.clip_len = pickle.loads(txn.get('metadata'.encode()))['seg_len']
             self.audio_clip_len = round(self.audio_unit * self.clip_len)
@@ -102,6 +102,14 @@ class HDTF_TFHP(DatasetBase):
                     coef_dict = {k: (coef_dict[k] - self.coef_stats[f'{k}_mean']) / (self.coef_stats[f'{k}_std'] + 1e-9)
                                 for k in ['shape', 'exp', 'pose']}
 
-                data_dict.append(Datum(name=subject, audio=audio, coefficients=coef_dict))
+                data_dict[split].append(Datum(name=subject, audio=audio, coefficients=coef_dict))
 
         super().__init__(train=data_dict['train'], val=data_dict['val'], test=data_dict['test'])
+
+
+class DiffPoseTalkDM(DataManager):
+  
+    def __init__(self,
+                cfg,
+                dataset_wrapper=None):
+        super().__init__(cfg, dataset_wrapper)
